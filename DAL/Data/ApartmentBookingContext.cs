@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Contracts.Enums;
 
 namespace DAL.Data;
 
@@ -138,10 +139,13 @@ public partial class ApartmentBookingContext : DbContext
             entity.Property(e => e.EndDate).HasColumnName("end_date");
             entity.Property(e => e.StartDate).HasColumnName("start_date");
             entity.Property(e => e.Status)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasDefaultValue("pending")
-                .HasColumnName("status");
+            .HasMaxLength(10)
+            .IsUnicode(false)
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => (BookingStatus)Enum.Parse(typeof(BookingStatus), v, true))
+            .HasDefaultValue(BookingStatus.Pending)
+            .HasColumnName("status");
             entity.Property(e => e.TenantId).HasColumnName("tenant_id");
             entity.Property(e => e.TotalPrice)
                 .HasColumnType("decimal(12, 2)")
@@ -182,10 +186,13 @@ public partial class ApartmentBookingContext : DbContext
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("new_total_price");
             entity.Property(e => e.Status)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasDefaultValue("pending")
-                .HasColumnName("status");
+            .HasMaxLength(10)
+            .IsUnicode(false)
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => (BookingModificationRequestStatus)Enum.Parse(typeof(BookingModificationRequestStatus), v, true))
+            .HasDefaultValue(BookingModificationRequestStatus.Pending)
+            .HasColumnName("status");
 
             entity.HasOne(d => d.Booking).WithMany(p => p.BookingModificationRequests)
                 .HasForeignKey(d => d.BookingId)
@@ -456,11 +463,14 @@ public partial class ApartmentBookingContext : DbContext
                 .HasMaxLength(500)
                 .HasColumnName("id_photo_path");
             entity.Property(e => e.Language)
-                .HasMaxLength(2)
-                .IsUnicode(false)
-                .HasDefaultValue("ar")
-                .IsFixedLength()
-                .HasColumnName("language");
+            .HasMaxLength(2)
+            .IsUnicode(false)
+            .IsFixedLength()
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => (UserLanguage)Enum.Parse(typeof(UserLanguage), v, true))
+            .HasDefaultValue(UserLanguage.Ar)
+            .HasColumnName("language");
             entity.Property(e => e.LastName)
                 .HasMaxLength(60)
                 .HasColumnName("last_name");
@@ -478,19 +488,28 @@ public partial class ApartmentBookingContext : DbContext
                 .HasColumnName("reviewed_at");
             entity.Property(e => e.ReviewedBy).HasColumnName("reviewed_by");
             entity.Property(e => e.Role)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("role");
+            .HasMaxLength(10)
+            .IsUnicode(false)
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => (UserRoles)Enum.Parse(typeof(UserRoles), v, true))
+            .HasColumnName("role");
             entity.Property(e => e.Status)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasDefaultValue("pending")
-                .HasColumnName("status");
+            .HasMaxLength(10)
+            .IsUnicode(false)
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => (UserStatus)Enum.Parse(typeof(UserStatus), v, true))
+            .HasDefaultValue(UserStatus.Pending)
+            .HasColumnName("status");
             entity.Property(e => e.Theme)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .HasDefaultValue("light")
-                .HasColumnName("theme");
+            .HasMaxLength(5)
+            .IsUnicode(false)
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => (UserThemes)Enum.Parse(typeof(UserThemes), v, true))
+            .HasDefaultValue(UserThemes.Light)
+            .HasColumnName("theme");
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(sysutcdatetime())")

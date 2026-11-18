@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Contracts.Enums;
+
 
 namespace DAL.Models;
 
@@ -17,7 +17,7 @@ public partial class Booking
 
     public decimal TotalPrice { get; set; }
 
-    public string Status { get; set; } = null!;
+    public BookingStatus Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

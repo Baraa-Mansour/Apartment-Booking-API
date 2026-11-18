@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Contracts.Enums;
+
 
 namespace DAL.Models;
 
@@ -11,9 +11,9 @@ public partial class User
 
     public string PasswordHash { get; set; } = null!;
 
-    public string Role { get; set; } = null!;
+    public UserRoles Role { get; set; }
 
-    public string Status { get; set; } = null!;
+    public UserStatus Status { get; set; }
 
     public string FirstName { get; set; } = null!;
 
@@ -25,9 +25,9 @@ public partial class User
 
     public string IdPhotoPath { get; set; } = null!;
 
-    public string Language { get; set; } = null!;
+    public UserLanguage Language { get; set; }
 
-    public string Theme { get; set; } = null!;
+    public UserThemes Theme { get; set; }
 
     public int? ReviewedBy { get; set; }
 
