@@ -1,0 +1,110 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.user
+*.suo
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.rsuser
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## Test results / coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+TestResults/
+[Cc]overage/
+*.trx
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.nuget.props
+*.nuget.targets
+
+## ASP.NET Core specific
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+wwwroot/uploads/
+wwwroot/files/
+
+## User secrets / env
+.env
+.env.*
+!.env.example
+
+## EF Core
+*.mdf
+*.ldf
+*.ndf
+
+## Logs
+*.log
+logs/
+
+## Node / frontend assets (if using SPA)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+## Publish / deployment
+publish/
+*.pubxml
+*.publishproj
+*.publishsettings
+PublishScripts/
+
+## OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Certificates / keys
+*.pfx
+*.p12
+*.key
+*.pem
+!appsettings.example.json
+
+## Misc
+*.orig
+*.tmp
+*.swp
