@@ -6,5 +6,6 @@ namespace DAL.Interfaces
     {
         public Task<bool> ExistsByPhoneAsync(string phone);
         public Task AddUserAsync(User user);
+        public Task<User?> FindActiveUserByPhoneAsync(string phone);
     }
 }

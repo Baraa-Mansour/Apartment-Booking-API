@@ -23,5 +23,13 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponse>> Login([FromBody]LoginRequest login)
+        {
+            LoginResponse response = await _authService.LoginAsync(login);
+
+            return Ok(response);
+        }
     }
 }

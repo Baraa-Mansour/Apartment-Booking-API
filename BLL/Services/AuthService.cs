@@ -11,10 +11,12 @@ namespace BLL.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepo _userRepo;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(IUserRepo userRepo)
+        public AuthService(IUserRepo userRepo, ITokenService tokenService)
         {
             _userRepo = userRepo;
+            _tokenService = tokenService;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
@@ -65,6 +67,23 @@ namespace BLL.Services
             };
 
             return user;
+        }
+
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
+        {
+            User user = await _userRepo.FindActiveUserByPhoneAsync(request.Phone);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                throw new UnauthorizedException("Invalid credentials");
+
+            LoginResponse response = new LoginResponse()
+            {
+                AccessToken = _tokenService.GenerateAccessToken(user),
+                RefreshToken = _tokenService.GenerateRefreshToken()
+            };
+
+            await _tokenService.AddRefreshTokenAsync(response.RefreshToken, user.UserId);
+
+            return response;
         }
     }
 }
