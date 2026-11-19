@@ -1,5 +1,5 @@
 ﻿using BLL.Interfaces;
-using Contracts.DTOs;
+using Contracts.DTOs.auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

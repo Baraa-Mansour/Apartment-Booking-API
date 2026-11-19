@@ -1,10 +1,10 @@
 ﻿using BLL.Exceptions;
 using BLL.Interfaces;
-using Contracts.DTOs;
 using DAL.Interfaces;
 using DAL.Models;
 using System.ComponentModel.DataAnnotations;
 using Contracts.Enums;
+using Contracts.DTOs.auth;
 
 namespace BLL.Services
 {

@@ -1,4 +1,4 @@
-﻿namespace Contracts.DTOs
+﻿namespace Contracts.DTOs.auth
 {
     public class LoginResponse
     {

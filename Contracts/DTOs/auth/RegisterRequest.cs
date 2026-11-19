@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Contracts.DTOs
+namespace Contracts.DTOs.auth
 {
     public class RegisterRequest
     {
