@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Exceptions;
+using BLL.Interfaces;
 using Contracts.DTOs.apartment;
 using DAL.Interfaces;
 
@@ -16,6 +17,15 @@ namespace BLL.Services
         public async Task<(List<ListItemApartment> Items, int Count)> GetAllWithCountAsync(ApartmentFilterParams filterParams)
         {
             return await _apartmentRepo.GetAllWithCountAsync(filterParams);
+        }
+
+        public async Task<ApartmentDetails> GetDetailsById(int apartmentId)
+        {
+            ApartmentDetails? apartmentDetails = await _apartmentRepo.GetDetailsById(apartmentId);
+            if (apartmentDetails == null)
+                throw new NotFoundException("Apartment not Found");
+
+            return apartmentDetails;
         }
     }
 }

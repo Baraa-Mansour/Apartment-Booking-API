@@ -66,5 +66,40 @@ namespace DAL.Repos
 
             return (items,  count);
         }
+
+        public async Task<ApartmentDetails?> GetDetailsById(int apartmentId)
+        {
+            var apartmentDetails = await _context.Apartments
+                .Where(a => a.ApartmentId == apartmentId)
+                .Where(a => a.DeletedAt == null)
+                .Where(a => a.IsActive)
+                .Select(a => new ApartmentDetails
+                {
+                    ApartmentId = a.ApartmentId,
+                    Governorate = a.City.Governorate.NameEn,
+                    City = a.City.NameEn,
+                    Title = a.Title,
+                    Address = a.Address,
+                    AreaSqm = a.AreaSqm,
+                    PricePerNight = a.PricePerNight,
+                    Rate = a.Reviews.Average(r => r.Rating),
+                    ImagesUrls = a.ApartmentImages
+                        .Select(ai => ai.Path).ToList(),
+                    Description = a.Description,
+                    Rooms = a.Rooms,
+                    Bathrooms = a.Bathrooms,
+                    MaxGuests = a.MaxGuests,
+                    FloorNo = a.FloorNo,
+                    OwnerId = a.OwnerId,
+                    OwnerName = 
+                        $"{a.Owner.FirstName} {a.Owner.LastName}",
+                    OwnerPhone = a.Owner.Phone,
+                    ProfilePhotoUrl = a.Owner.ProfilePhotoPath
+                })
+                .FirstOrDefaultAsync();
+
+            return apartmentDetails;
+        }
+
     }
 }

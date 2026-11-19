@@ -31,5 +31,12 @@ namespace API.Controllers
                 PageSize = filterParams.PageSize
             });
         }
+
+        [HttpGet("{apartmentId:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResponse<ApartmentDetails>))]
+        public async Task<ActionResult<ApartmentDetails>> GetById([FromRoute]int apartmentId)
+        {
+            return Ok(await _apartmentService.GetDetailsById(apartmentId));
+        }
     }
 }
