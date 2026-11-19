@@ -1,6 +1,5 @@
 ﻿using BLL.Interfaces;
 using Contracts.Configs;
-using DAL.Interfaces;
 using DAL.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,12 +11,10 @@ namespace BLL.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IRefreshTokenRepo _refreshTokenRepo;
         private readonly JwtSettings _jwtSettings;
 
-        public TokenService(IRefreshTokenRepo refreshTokenRepo, JwtSettings jwtSettings)
+        public TokenService(JwtSettings jwtSettings)
         {
-            _refreshTokenRepo = refreshTokenRepo;
             _jwtSettings = jwtSettings;
         }
 
@@ -53,18 +50,5 @@ namespace BLL.Services
             return Convert.ToBase64String(bytes);
         }
 
-        public async Task AddRefreshTokenAsync(string refreshToken, int userId)
-        {
-            DateTime currentDateTime = DateTime.UtcNow;
-            RefreshToken token = new RefreshToken()
-            {
-                UserId = userId,
-                TokenHash = BCrypt.Net.BCrypt.HashPassword(refreshToken),
-                CreatedAt = currentDateTime,
-                ExpiresAt = currentDateTime.AddDays(_jwtSettings.RefreshTokenExpirationDays)
-            };
-
-            await _refreshTokenRepo.AddRefreshToken(token);
-        }
     }
 }

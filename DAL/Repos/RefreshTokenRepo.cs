@@ -14,7 +14,7 @@ namespace DAL.Repos
             _context = context;
         }
 
-        public async Task AddRefreshToken(RefreshToken token)
+        public async Task AddRefreshTokenAsync(RefreshToken token)
         {
             await _context.RefreshTokens.AddAsync(token);
             await _context.SaveChangesAsync();

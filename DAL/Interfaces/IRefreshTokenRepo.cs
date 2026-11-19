@@ -5,6 +5,6 @@ namespace DAL.Interfaces
 {
     public interface IRefreshTokenRepo
     {
-        public Task AddRefreshToken(RefreshToken token);
+        public Task AddRefreshTokenAsync(RefreshToken token);
     }
 }

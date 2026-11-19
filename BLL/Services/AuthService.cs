@@ -1,23 +1,30 @@
 ﻿using BLL.Exceptions;
 using BLL.Interfaces;
+using Contracts.Configs;
+using Contracts.DTOs.auth;
+using Contracts.Enums;
 using DAL.Interfaces;
 using DAL.Models;
 using System.ComponentModel.DataAnnotations;
-using Contracts.Enums;
-using Contracts.DTOs.auth;
 
 namespace BLL.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IUserRepo _userRepo;
+        private readonly IRefreshTokenRepo _refreshTokenRepo;
         private readonly ITokenService _tokenService;
+        private readonly JwtSettings _jwtSettings;
 
-        public AuthService(IUserRepo userRepo, ITokenService tokenService)
+        public AuthService(IUserRepo userRepo, ITokenService tokenService, JwtSettings jwtSettings,
+            IRefreshTokenRepo refreshTokenRepo)
         {
             _userRepo = userRepo;
             _tokenService = tokenService;
+            _jwtSettings = jwtSettings;
+            _refreshTokenRepo = refreshTokenRepo;
         }
+
 
         public async Task RegisterAsync(RegisterRequest request)
         {
@@ -71,7 +78,7 @@ namespace BLL.Services
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
-            User user = await _userRepo.FindActiveUserByPhoneAsync(request.Phone);
+            User? user = await _userRepo.FindActiveUserByPhoneAsync(request.Phone);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 throw new UnauthorizedException("Invalid credentials");
 
@@ -81,9 +88,23 @@ namespace BLL.Services
                 RefreshToken = _tokenService.GenerateRefreshToken()
             };
 
-            await _tokenService.AddRefreshTokenAsync(response.RefreshToken, user.UserId);
+            RefreshToken refreshToken = CreateRefreshToken(response.RefreshToken, user.UserId);
+            await _refreshTokenRepo.AddRefreshTokenAsync(refreshToken);
 
             return response;
+        }
+        private RefreshToken CreateRefreshToken(string refreshToken,  int userId)
+        {
+            DateTime currentDateTime = DateTime.UtcNow;
+            RefreshToken token = new RefreshToken()
+            {
+                UserId = userId,
+                TokenHash = BCrypt.Net.BCrypt.HashPassword(refreshToken),
+                CreatedAt = currentDateTime,
+                ExpiresAt = currentDateTime.AddDays(_jwtSettings.RefreshTokenExpirationDays)
+            };
+
+            return token;
         }
     }
 }
