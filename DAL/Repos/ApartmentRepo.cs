@@ -47,7 +47,7 @@ namespace DAL.Repos
             
             int count = await query.CountAsync();
             var items = await query
-                .OrderBy(a => a.ApartmentId)
+                .OrderBy(a => a.CreatedAt)
                 .Select(a => new ListItemApartment
                 {
                     ApartmentId = a.ApartmentId,
