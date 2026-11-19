@@ -25,6 +25,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
         public async Task<ActionResult<LoginResponse>> Login([FromBody]LoginRequest login)
         {
             LoginResponse response = await _authService.LoginAsync(login);
