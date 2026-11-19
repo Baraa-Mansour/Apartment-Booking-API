@@ -3,6 +3,7 @@ using DAL.Interfaces;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Contracts.Enums;
+using Contracts.DTOs.user;
 
 
 namespace DAL.Repos
@@ -36,6 +37,41 @@ namespace DAL.Repos
                 .FirstOrDefaultAsync(u => u.Phone == phone);
 
             return user;
+        }
+
+        public async Task<(List<ListItemUser> Items, int Count)> GetAllWithCountAsync(UserFilterParams filterParams)
+        {
+            var query = _context.Users.AsNoTracking();
+
+            if (filterParams.Status != null)
+                query = query.Where(u => u.Status == filterParams.Status);
+
+            if (filterParams.Role != null)
+                query = query.Where(u => u.Role == filterParams.Role);
+
+            if (filterParams.IsDeleted != null)
+                query = filterParams.IsDeleted.Value
+                    ? query.Where(u => u.DeletedAt != null)
+                    : query.Where(u => u.DeletedAt == null);
+
+            int count = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(u => u.CreatedAt)
+                .Select(u => new ListItemUser
+                {
+                    UserId = u.UserId,
+                    Name = $"{u.FirstName} {u.LastName}",
+                    Phone = u.Phone,
+                    Role = u.Role,
+                    Status = u.Status,
+                    ProfilePhotoUrls = u.ProfilePhotoPath
+                })
+                .Skip((filterParams.Page - 1) * filterParams.PageSize)
+                .Take(filterParams.PageSize)
+                .ToListAsync();
+
+            return (items, count);
         }
     }
 }
