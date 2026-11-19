@@ -37,7 +37,7 @@ public partial class Apartment
 
     public DateTime? DeletedAt { get; set; }
 
-    public virtual ICollection<ApartmentImage>? ApartmentImages { get; set; } = new List<ApartmentImage>();
+    public virtual ICollection<ApartmentImage> ApartmentImages { get; set; } = new List<ApartmentImage>();
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

@@ -29,9 +29,11 @@ builder.Services.AddDbContext<ApartmentBookingContext>(options =>
 
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IRefreshTokenRepo, RefreshTokenRepo>();
+builder.Services.AddScoped<IApartmentRepo, ApartmentRepo>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IApartmentService, ApartmentService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
