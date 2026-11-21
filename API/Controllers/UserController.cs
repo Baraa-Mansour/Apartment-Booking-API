@@ -43,5 +43,16 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("{userId:int}/reject")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> RejectUser([FromRoute] int userId)
+        {
+            int adminId = 4; // TEST!! : need to be deleted
+
+            await _userService.RejectUserAsync(userId, adminId);
+
+            return NoContent();
+        }
     }
 }

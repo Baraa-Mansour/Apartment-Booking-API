@@ -38,6 +38,24 @@ namespace BLL.Services
 
             await _userRepo.UpdateUserAsync(user);
         }
+
+        public async Task RejectUserAsync(int userId, int adminId)
+        {
+            User? admin = await _userRepo.GetUserByIdAsync(adminId);
+            if (admin is null || !IsActiveAdmin(admin))
+                throw new ForbiddenException("Only Active Admin Can Reject Users");
+
+            User? user = await _userRepo.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User Not Found");
+            if (!ValidToRejected(user))
+                throw new ConflictException("Only Pending User Can Be Rejected");
+
+            ReviewUserStatus(user, UserStatus.Rejected, adminId);
+
+            await _userRepo.UpdateUserAsync(user);
+        }
+
         static private bool IsActiveAdmin(User? admin)
         {
             return (admin != null && admin.Role == UserRoles.Admin && admin.Status == UserStatus.Approved);
@@ -45,6 +63,10 @@ namespace BLL.Services
         static private bool ValidToApproved(User? user)
         {
             return (user is not null && user.Status == UserStatus.Pending && user.DeletedAt is null);  
+        }
+        static private bool ValidToRejected(User? user)
+        {
+            return (user is not null && user.Status == UserStatus.Pending && user.DeletedAt is null);
         }
         static private void ReviewUserStatus(User user, UserStatus status, int adminId)
         {
