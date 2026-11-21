@@ -1,6 +1,7 @@
 ﻿using Contracts.DTOs.apartment;
 using DAL.Data;
 using DAL.Interfaces;
+using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -99,6 +100,14 @@ namespace DAL.Repos
                 .FirstOrDefaultAsync();
 
             return apartmentDetails;
+        }
+
+        public async Task<Apartment?> GetByIdAsync(int apartmentId)
+        {
+            Apartment? apartment = await _context.Apartments
+                .FindAsync(apartmentId);
+
+            return apartment;
         }
 
     }

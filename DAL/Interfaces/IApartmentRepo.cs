@@ -1,4 +1,5 @@
 ﻿using Contracts.DTOs.apartment;
+using DAL.Models;
 
 namespace DAL.Interfaces
 {
@@ -6,5 +7,6 @@ namespace DAL.Interfaces
     {
         public Task<(List<ListItemApartment> Items, int Count)> GetAllWithCountAsync(ApartmentFilterParams filterParams);
         public Task<ApartmentDetails?> GetDetailsById(int apartmentId);
+        public Task<Apartment?> GetByIdAsync(int apartmentId);
     }
 }
