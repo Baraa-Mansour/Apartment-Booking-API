@@ -71,6 +71,7 @@ namespace DAL.Repos
         public async Task<ApartmentDetails?> GetDetailsById(int apartmentId)
         {
             var apartmentDetails = await _context.Apartments
+                .AsNoTracking()
                 .Where(a => a.ApartmentId == apartmentId)
                 .Where(a => a.DeletedAt == null)
                 .Where(a => a.IsActive)
