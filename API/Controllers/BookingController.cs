@@ -25,5 +25,17 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("{bookingId:int}/cancel")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+        public async Task<ActionResult> CancelBooking(int bookingId)
+        {
+            int usereId = 7;
+
+            await _bookingService.CancelBookingAsync(usereId, bookingId);
+
+            return NoContent();
+        }
     }
 }

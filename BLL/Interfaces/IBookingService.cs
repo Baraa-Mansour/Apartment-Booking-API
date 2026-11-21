@@ -5,5 +5,6 @@ namespace BLL.Interfaces
     public interface IBookingService
     {
         public Task CreateBookingAsync(int userId, CreateBookingRequest request);
+        public Task CancelBookingAsync(int userId, int bookingId);
     }
 }

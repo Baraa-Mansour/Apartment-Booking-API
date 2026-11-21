@@ -24,6 +24,12 @@ namespace DAL.Repos
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Booking?> GetByIdAsync(int bookingId)
+        {
+            return await _context.Bookings
+                .FindAsync(bookingId);
+        }
+
         public async Task<bool> IsApprovedApartmentBookingInDateAsync(int apartmentId, DateOnly startDate, DateOnly endDate)
         {
             return await _context.Bookings
@@ -33,6 +39,11 @@ namespace DAL.Repos
                     b.Status == BookingStatus.Approved &&
                     b.StartDate <= endDate &&
                     b.EndDate >= startDate);
+        }
+
+        public async Task UpdateBookingAsync(Booking booking)
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
