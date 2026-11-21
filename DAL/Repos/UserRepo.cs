@@ -73,5 +73,21 @@ namespace DAL.Repos
 
             return (items, count);
         }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            // Already tracked
+            // _context.Update(user); 
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            User? user = await _context.Users
+                .FindAsync(userId);
+
+            return user;
+        }
     }
 }

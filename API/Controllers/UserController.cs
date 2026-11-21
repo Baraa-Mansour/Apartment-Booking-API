@@ -32,5 +32,16 @@ namespace API.Controllers
                 PageSize = filterParams.PageSize
             });
         }
+
+        [HttpPatch("{userId:int}/approve")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> ApproveUser([FromRoute]int userId)
+        {
+            int adminId = 4; // TEST!! : need to be deleted
+
+            await _userService.ApproveUserAsync(userId, adminId);
+
+            return NoContent();
+        }
     }
 }
