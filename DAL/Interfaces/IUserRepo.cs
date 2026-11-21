@@ -8,7 +8,7 @@ namespace DAL.Interfaces
         public Task<bool> ExistsByPhoneAsync(string phone);
         public Task AddUserAsync(User user);
         public Task UpdateUserAsync(User user);
-        public Task<User?> FindActiveUserByPhoneAsync(string phone);
+        public Task<User?> GetActiveUserByPhoneAsync(string phone);
         public Task<(List<ListItemUser> Items, int Count)> GetAllWithCountAsync(UserFilterParams filterParams);
         public Task<User?> GetUserByIdAsync(int userId);
     }

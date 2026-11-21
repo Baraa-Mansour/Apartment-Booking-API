@@ -29,7 +29,7 @@ namespace DAL.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User?> FindActiveUserByPhoneAsync(string phone)
+        public async Task<User?> GetActiveUserByPhoneAsync(string phone)
         {
             User? user = await _context.Users
                 .Where(u => u.Status == UserStatus.Approved)

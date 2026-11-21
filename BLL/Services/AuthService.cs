@@ -78,7 +78,7 @@ namespace BLL.Services
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
-            User? user = await _userRepo.FindActiveUserByPhoneAsync(request.Phone);
+            User? user = await _userRepo.GetActiveUserByPhoneAsync(request.Phone);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 throw new UnauthorizedException("Invalid credentials");
 
