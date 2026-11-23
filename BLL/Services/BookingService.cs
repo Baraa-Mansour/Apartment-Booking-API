@@ -105,9 +105,9 @@ namespace BLL.Services
         static private void ValidateCreateRequest(CreateBookingRequest request)
         {
             if (request.StartDate is null || request.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow))
-                throw new ValidationException("Start Date Should be In Future");
+                throw new InvalidOperationException("Start Date Should be In Future");
             if (request.EndDate is null || request.EndDate <= request.StartDate)
-                throw new ValidationException("End Date Should Be Greater/Equal Start Date");
+                throw new InvalidOperationException("End Date Should Be Greater/Equal Start Date");
         }
         
         static private void ValidateApartmentToBook(Apartment apartment)
