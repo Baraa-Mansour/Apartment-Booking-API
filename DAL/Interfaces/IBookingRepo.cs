@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using Contracts.DTOs.booking;
+using DAL.Models;
 
 namespace DAL.Interfaces
 {
@@ -6,6 +7,7 @@ namespace DAL.Interfaces
     {
         public Task<bool> IsApprovedApartmentBookingInDateAsync(int apartmentId, DateOnly startDate, DateOnly endDate);
         public Task<Booking?> GetByIdAsync(int bookingId);
+        public Task<(List<TenantBookingHistoryItem> Items, int Count)> GetTenantHistoryWithCountAsync(int tenantId, TenantBookingHistoryParams filterParams);
         public Task AddBookingAsync(Booking booking);
         public Task UpdateBookingAsync(Booking booking);
     }

@@ -60,6 +60,19 @@ namespace BLL.Services
             await _bookingRepo.UpdateBookingAsync(booking);
         }
 
+        public async Task<(List<TenantBookingHistoryItem> Items, int Count)> GetTenantHistoryAsync(
+            int tenantId,
+            TenantBookingHistoryParams filterParams)
+        {
+            User? user = await _userRepo.GetUserByIdAsync(tenantId);
+            if (user == null)
+                throw new NotFoundException("User Not Found");
+
+            ValidateTenantForHistory(user);
+
+            return await _bookingRepo.GetTenantHistoryWithCountAsync(tenantId, filterParams);
+        }
+
         static private void ChangeBookingStatus(Booking booking, BookingStatus status)
         {
             booking.Status = status;
@@ -127,6 +140,15 @@ namespace BLL.Services
                 throw new NotFoundException("User Not Found");
             if (user.Status != UserStatus.Approved)
                 throw new ForbiddenException("Only Approved User Can Cancel");
+        }
+        static private void ValidateTenantForHistory(User user)
+        {
+            if (user.DeletedAt is not null)
+                throw new NotFoundException("User Not Found");
+            if (user.Status != UserStatus.Approved)
+                throw new ForbiddenException("Only Approved User Can View Booking History");
+            if (user.Role != UserRoles.Tenant)
+                throw new ForbiddenException("Only Tenant Can View Booking History");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Contracts.Enums;
+﻿using Contracts.DTOs.booking;
+using Contracts.Enums;
 using DAL.Data;
 using DAL.Interfaces;
 using DAL.Models;
@@ -28,6 +29,51 @@ namespace DAL.Repos
         {
             return await _context.Bookings
                 .FindAsync(bookingId);
+        }
+
+        public async Task<(List<TenantBookingHistoryItem> Items, int Count)> GetTenantHistoryWithCountAsync(
+            int tenantId,
+            TenantBookingHistoryParams filterParams)
+        {
+            var query = _context.Bookings
+                .AsNoTracking()
+                .Where(b => b.TenantId == tenantId);
+
+            if (filterParams.Status != null)
+                query = query.Where(b => b.Status == filterParams.Status.Value);
+
+            int count = await query.CountAsync();
+
+            var items = await query
+                .Include(b => b.Apartment)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.Governorate)
+                .Include(b => b.Apartment.ApartmentImages)
+                .OrderByDescending(b => b.CreatedAt)
+                .Skip((filterParams.Page - 1) * filterParams.PageSize)
+                .Take(filterParams.PageSize)
+                .Select(b => new TenantBookingHistoryItem
+                {
+                    BookingId = b.BookingId,
+                    ApartmentId = b.ApartmentId,
+                    ApartmentTitle = b.Apartment.Title,
+                    Governorate = b.Apartment.City.Governorate.NameEn,
+                    City = b.Apartment.City.NameEn,
+                    Address = b.Apartment.Address,
+                    TotalPrice = b.TotalPrice,
+                    StartDate = b.StartDate,
+                    EndDate = b.EndDate,
+                    Status = b.Status,
+                    CreatedAt = b.CreatedAt,
+                    UpdatedAt = b.UpdatedAt,
+                    CoverImageUrl = b.Apartment.ApartmentImages
+                        .Where(i => i.IsCover)
+                        .Select(i => i.Path)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            return (items, count);
         }
 
         public async Task<bool> IsApprovedApartmentBookingInDateAsync(int apartmentId, DateOnly startDate, DateOnly endDate)
