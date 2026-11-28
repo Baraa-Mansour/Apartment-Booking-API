@@ -73,6 +73,43 @@ namespace BLL.Services
             return await _bookingRepo.GetTenantHistoryWithCountAsync(tenantId, filterParams);
         }
 
+        public async Task CreateBookingModificationRequestAsync(int userId, int bookingId, CreateBookingModificationRequest request)
+        {
+            ValidateCreateBookingModificationRequest(request);
+
+            User? user = await _userRepo.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User Not Found");
+            ValidateUserToModifyBooking(user);
+
+            Booking? booking = await _bookingRepo.GetByIdAsync(bookingId);
+            if (booking == null)
+                throw new NotFoundException("Booking Not Found");
+            ValidateBookingOwnership(booking, userId);
+            ValidateBookingApproved(booking);
+            ValidateDatesAreNotSame(booking, request.NewStartDate!.Value, request.NewEndDate!.Value);
+
+            await CheckNoPendingModificationRequestAsync(bookingId);
+
+            Apartment? apartment = await _apartmentRepo.GetByIdAsync(booking.ApartmentId);
+            if (apartment == null)
+                throw new NotFoundException("Apartment Not Found");
+            ValidateApartmentToModify(apartment);
+
+            await CheckNoOverlappingApprovedBookingAsync(
+                booking.ApartmentId,
+                bookingId,
+                request.NewStartDate!.Value,
+                request.NewEndDate!.Value);
+
+            BookingModificationRequest modificationRequest = CreateBookingModificationRequestObject(
+                booking,
+                apartment.PricePerNight,
+                request);
+
+            await _bookingRepo.AddBookingModificationRequestAsync(modificationRequest);
+        }
+
         static private void ChangeBookingStatus(Booking booking, BookingStatus status)
         {
             booking.Status = status;
@@ -149,6 +186,70 @@ namespace BLL.Services
                 throw new ForbiddenException("Only Approved User Can View Booking History");
             if (user.Role != UserRoles.Tenant)
                 throw new ForbiddenException("Only Tenant Can View Booking History");
+        }
+        static private void ValidateUserToModifyBooking(User user)
+        {
+            if (user.DeletedAt is not null)
+                throw new NotFoundException("User Not Found");
+            if (user.Status != UserStatus.Approved)
+                throw new ForbiddenException("Only Approved User Can Modify Booking");
+            if (user.Role != UserRoles.Tenant)
+                throw new ForbiddenException("Only Tenant Can Modify Booking");
+        }
+        static private void ValidateBookingOwnership(Booking booking, int userId)
+        {
+            if (booking.TenantId != userId)
+                throw new ForbiddenException("This is not your booking");
+        }
+        static private void ValidateBookingApproved(Booking booking)
+        {
+            if (booking.Status != BookingStatus.Approved)
+                throw new InvalidOperationException("Only Approved Booking Can Be Modified");
+        }
+        static private void ValidateDatesAreNotSame(Booking booking, DateOnly newStartDate, DateOnly newEndDate)
+        {
+            if (booking.StartDate == newStartDate && booking.EndDate == newEndDate)
+                throw new InvalidOperationException("New dates should be different from the current dates");
+        }
+        private async Task CheckNoPendingModificationRequestAsync(int bookingId)
+        {
+            if (await _bookingRepo.HasPendingModificationRequestAsync(bookingId))
+                throw new ConflictException("There is a pending modification request for this booking");
+        }
+        static private void ValidateApartmentToModify(Apartment apartment)
+        {
+            if (apartment.DeletedAt is not null)
+                throw new NotFoundException("Apartment Not Found");
+
+            if (!apartment.IsActive)
+                throw new InvalidOperationException("Apartment Not Active");
+        }
+        private async Task CheckNoOverlappingApprovedBookingAsync(int apartmentId, int currentBookingId, DateOnly newStartDate, DateOnly newEndDate)
+        {
+            if (await _bookingRepo.IsApprovedApartmentBookingInDateExcludingBookingAsync(apartmentId, currentBookingId, newStartDate, newEndDate))
+                throw new ConflictException("This modification request overlaps with an existing approved booking");
+        }
+        static private BookingModificationRequest CreateBookingModificationRequestObject(Booking booking, decimal apartmentPricePerNight, CreateBookingModificationRequest request)
+        {
+            DateOnly newStartDate = request.NewStartDate!.Value;
+            DateOnly newEndDate = request.NewEndDate!.Value;
+
+            return new BookingModificationRequest
+            {
+                BookingId = booking.BookingId,
+                NewStartDate = newStartDate,
+                NewEndDate = newEndDate,
+                NewTotalPrice = apartmentPricePerNight * (newEndDate.DayNumber - newStartDate.DayNumber),
+                Status = BookingModificationRequestStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
+        static private void ValidateCreateBookingModificationRequest(CreateBookingModificationRequest request)
+        {
+            if (request.NewStartDate is null || request.NewStartDate <= DateOnly.FromDateTime(DateTime.UtcNow))
+                throw new InvalidOperationException("New Start Date Should be In Future");
+            if (request.NewEndDate is null || request.NewEndDate <= request.NewStartDate)
+                throw new InvalidOperationException("New End Date Should Be Greater/Equal New Start Date");
         }
     }
 }

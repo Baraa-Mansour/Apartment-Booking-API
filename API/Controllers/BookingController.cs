@@ -83,5 +83,29 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        /// <summary>Creates a modification request for an approved booking.</summary>
+        /// <param name="bookingId">The ID of the booking to modify.</param>
+        /// <param name="request">The requested new booking dates.</param>
+        /// <response code="204">The modification request was created successfully.</response>
+        /// <response code="403">The user does not own the booking or is not allowed to modify it.</response>
+        /// <response code="404">The user, booking, or apartment was not found.</response>
+        /// <response code="409">The booking dates overlap or already have a pending modification request.</response>
+        [HttpPost("{bookingId:int}/modification-request")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult> CreateBookingModificationRequest(
+            [FromRoute] int bookingId,
+            [FromBody] CreateBookingModificationRequest request)
+        {
+            int userId = 7; // TEST!! : Need to be deleted
+
+            await _bookingService.CreateBookingModificationRequestAsync(userId, bookingId, request);
+
+            return NoContent();
+        }
     }
 }

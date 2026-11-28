@@ -10,5 +10,6 @@ namespace BLL.Interfaces
         public Task<(List<TenantBookingHistoryItem> Items, int Count)> GetTenantHistoryAsync(
             int tenantId,
             TenantBookingHistoryParams filterParams);
+        public Task CreateBookingModificationRequestAsync(int userId, int bookingId, CreateBookingModificationRequest request);
     }
 }

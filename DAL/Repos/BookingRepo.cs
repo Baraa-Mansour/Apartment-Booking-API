@@ -91,5 +91,34 @@ namespace DAL.Repos
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> HasPendingModificationRequestAsync(int bookingId)
+        {
+            return await _context.BookingModificationRequests
+                .AsNoTracking()
+                .AnyAsync(r => r.BookingId == bookingId && r.Status == BookingModificationRequestStatus.Pending);
+        }
+
+        public async Task<bool> IsApprovedApartmentBookingInDateExcludingBookingAsync(
+            int apartmentId,
+            int bookingId,
+            DateOnly startDate,
+            DateOnly endDate)
+        {
+            return await _context.Bookings
+                .AsNoTracking()
+                .AnyAsync(b =>
+                    b.ApartmentId == apartmentId &&
+                    b.BookingId != bookingId &&
+                    b.Status == BookingStatus.Approved &&
+                    b.StartDate <= endDate &&
+                    b.EndDate >= startDate);
+        }
+
+        public async Task AddBookingModificationRequestAsync(BookingModificationRequest request)
+        {
+            await _context.BookingModificationRequests.AddAsync(request);
+            await _context.SaveChangesAsync();
+        }
     }
 }
