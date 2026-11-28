@@ -407,7 +407,9 @@ public partial class ApartmentBookingContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.ToTable("reviews");
+            entity.ToTable("reviews", table => table.HasCheckConstraint(
+                "CK_reviews_rating",
+                "rating >= 1 AND rating <= 5"));
 
             entity.HasIndex(e => e.ApartmentId, "IX_reviews_apartment");
 

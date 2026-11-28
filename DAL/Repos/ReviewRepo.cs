@@ -17,6 +17,7 @@ namespace DAL.Repos
         public async Task<Booking?> GetBookingForReviewAsync(int bookingId)
         {
             return await _context.Bookings
+                .AsNoTracking()
                 .Include(b => b.Review)
                 .FirstOrDefaultAsync(b => b.BookingId == bookingId);
         }

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using BLL.Exceptions;
 using BLL.Interfaces;
 using Contracts.DTOs.review;
@@ -21,6 +20,9 @@ namespace BLL.Services
 
         public async Task CreateReviewAsync(int tenantId, CreateReviewRequest request)
         {
+            if (request == null)
+                throw new InvalidOperationException("Review Request Is Required");
+
             ValidateCreateRequest(request);
 
             User? tenant = await _userRepo.GetUserByIdAsync(tenantId);
@@ -37,10 +39,10 @@ namespace BLL.Services
         private static void ValidateCreateRequest(CreateReviewRequest request)
         {
             if (request.BookingId is null || request.BookingId <= 0)
-                throw new ValidationException("Booking Id Is Required");
+                throw new InvalidOperationException("Booking Id Is Required");
 
             if (request.Rating < 1 || request.Rating > 5)
-                throw new ValidationException("Rating Must Be Between 1 And 5");
+                throw new InvalidOperationException("Rating Must Be Between 1 And 5");
         }
 
         private static void ValidateTenantToReview(User? tenant)
